@@ -1,6 +1,6 @@
 require("dotenv").config();
+
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
 const helmet = require("helmet");
@@ -17,21 +17,40 @@ const Image = require("./models/Image");
 
 const app = express();
 
-/* Connect database */
+/* ======================
+   CONNECT DATABASE
+====================== */
 connectDB();
 
-app.use(cors());
-app.use(express.json());
+/* ======================
+   MIDDLEWARE
+====================== */
+app.use(helmet());
 app.use(morgan("dev"));
-app.use("/api/totp", totpRoutes);
 
+app.use(express.json());
+
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "*",
+  credentials: true
+}));
+
+/* ======================
+   STATIC FILES
+====================== */
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+/* ======================
+   ROUTES
+====================== */
+app.use("/api/totp", totpRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api", authRoutes);
 
-
+/* ======================
+   IMAGE ROUTES
+====================== */
 app.get("/api/images/:category", async (req, res) => {
   try {
     const images = await Image.find({ category: req.params.category });
@@ -50,7 +69,18 @@ app.get("/api/images", async (req, res) => {
   }
 });
 
-/* Start server */
-app.listen(5000, () => {
-  console.log("Server running on http://localhost:5000");
+/* ======================
+   ROOT CHECK
+====================== */
+app.get("/", (req, res) => {
+  res.send("API is running...");
+});
+
+/* ======================
+   START SERVER
+====================== */
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
