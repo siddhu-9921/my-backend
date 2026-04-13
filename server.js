@@ -25,7 +25,11 @@ connectDB();
 /* ======================
    MIDDLEWARE
 ====================== */
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false, // 🔥 THIS FIXES YOUR ERROR
+  })
+);
 app.use(morgan("dev"));
 
 app.use(express.json());
