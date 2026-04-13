@@ -57,7 +57,12 @@ app.use("/api", authRoutes);
 ====================== */
 app.get("/api/images/:category", async (req, res) => {
   try {
-    const images = await Image.find({ category: req.params.category });
+    const category = decodeURIComponent(req.params.category);
+
+    const images = await Image.find({
+      category: { $regex: new RegExp(`^${category}$`, "i") }
+    });
+
     res.json(images);
   } catch (error) {
     res.status(500).json({ error: error.message });
