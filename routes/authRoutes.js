@@ -8,7 +8,7 @@ const QRCode = require("qrcode");
 
 const Admin = require("../models/Admin");
 
-const JWT_SECRET = "your_secret_key"; // ⚠️ move to .env in production
+
 
 /* ======================
    LOGIN (USERNAME + PASSWORD)
@@ -54,13 +54,6 @@ router.post("/login", async (req, res) => {
   });
 }
 
-// ✅ Already exists → DO NOT GENERATE AGAIN
-return res.json({
-  message: "Enter OTP",
-  firstTime: false
-});
-
-    // ✅ NOT FIRST TIME → JUST ASK OTP
     return res.json({
       message: "Enter OTP",
       firstTime: false
@@ -114,7 +107,7 @@ router.post("/verify-otp", async (req, res) => {
     // ✅ GENERATE JWT TOKEN
     const token = jwt.sign(
       { id: user._id },
-      JWT_SECRET,
+      process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 

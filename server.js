@@ -67,6 +67,21 @@ app.get("/", (req, res) => {
 ====================== */
 const PORT = process.env.PORT || 5000;
 
+app.get("/api/images/:category", async (req, res) => {
+  try {
+    const category = decodeURIComponent(req.params.category);
+
+    const images = await Image.find({
+      category: { $regex: new RegExp(`^${category}$`, "i") }
+    });
+
+    res.json(images);
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

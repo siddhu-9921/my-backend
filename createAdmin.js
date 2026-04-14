@@ -15,7 +15,7 @@ async function createAdmin() {
 
     console.log("MongoDB Connected");
 
-    const hashedPassword = await bcrypt.hash("Sangam@9822", 10);
+    const hashedPassword = await bcrypt.hash("sangam9822", 10);
 
     const admin = new Admin({
       username: "sangam",

@@ -47,7 +47,7 @@ router.post('/', upload.array('images', 10), async (req, res) => {
       console.log(`Saving image: ${file.filename}`);
       const newImage = await Image.create({
         url: file.path,
-        public_id: file.filename,
+        public_id: file.filename || file.public_id,
         category: category,
       });
 
