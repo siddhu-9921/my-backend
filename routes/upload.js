@@ -1,126 +1,102 @@
-const express = require('express')
-const router = express.Router()
-const multer = require('multer')
-const Image = require('../models/Image')
-const fs = require('fs')
-const path = require('path')
+const express = require('express');
+const router = express.Router();
+const multer = require('multer');
+const Image = require('../models/Image');
+
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('../config/cloudinary');
 
 /* ======================
-   MULTER STORAGE CONFIG
+   STORAGE CONFIG
 ====================== */
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "portfolio_uploads",
+    public_id: (req, file) => Date.now() + "-" + file.originalname
   },
-  filename: function (req, file, cb) {
-
-    const cleanName = file.originalname
-      .replace(/\s+/g, "_")   // remove spaces
-      .replace(/[()]/g, "");  // remove brackets
-
-    cb(null, Date.now() + "-" + cleanName);
-  }
 });
 
-const upload = multer({ storage: storage })
-
+const upload = multer({ storage });
 
 /* ======================
    UPLOAD IMAGES
 ====================== */
 
 router.post('/', upload.array('images', 10), async (req, res) => {
-
   try {
-
-    const category = req.body.category
+    const category = req.body.category;
 
     if (!category) {
-      return res.status(400).json({ message: "Category required" })
+      return res.status(400).json({ message: "Category required" });
     }
 
-    const savedImages = await Promise.all(
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: "No files uploaded" });
+    }
 
-      req.files.map(file =>
+    const savedImages = [];
 
-        Image.create({
-          filename: file.filename,
-          path: `uploads/${file.filename}`,
-          category: category
-        })
+    for (const file of req.files) {
+      const newImage = await Image.create({
+        url: file.path,                // ✅ Cloudinary URL
+        public_id: file.filename,      // ✅ REQUIRED for delete
+        category: category,
+      });
 
-      )
+      savedImages.push(newImage);
+    }
 
-    )
-
-    res.status(200).json(savedImages)
+    res.status(200).json(savedImages);
 
   } catch (error) {
-
-    console.error(error)
-    res.status(500).json({ error: error.message })
-
+    console.error("UPLOAD ERROR:", error);
+    res.status(500).json({ error: error.message });
   }
-
-})
-
+});
 
 /* ======================
    GET IMAGES
 ====================== */
 
 router.get('/', async (req, res) => {
-
   try {
+    const { category } = req.query;
 
-    const { category } = req.query
+    const filter = category ? { category } : {};
 
-    const filter = category ? { category } : {}
+    const images = await Image.find(filter).sort({ createdAt: -1 });
 
-    const images = await Image.find(filter).sort({ createdAt: -1 })
-
-    res.json(images)
-
+    res.json(images);
   } catch (error) {
-
-    res.status(500).json({ error: error.message })
-
+    res.status(500).json({ error: error.message });
   }
-
-})
-
+});
 
 /* ======================
-   DELETE SELECTED IMAGE
+   DELETE IMAGE
 ====================== */
 
 router.delete('/:id', async (req, res) => {
-
   try {
-
     const image = await Image.findById(req.params.id);
 
     if (!image) {
-      return res.status(404).json({ message: "Image not found" });
+      return res.status(404).json({ message: 'Image not found' });
     }
 
-    const filePath = path.join(__dirname, '../', image.path);
-
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    if (image.public_id) {
+      await cloudinary.uploader.destroy(image.public_id);
     }
 
     await Image.findByIdAndDelete(req.params.id);
 
-    res.json({ message: "Image deleted successfully" });
+    res.json({ message: 'Image deleted successfully' });
 
   } catch (error) {
-
     res.status(500).json({ error: error.message });
-
   }
-
 });
 
-module.exports = router
+module.exports = router;

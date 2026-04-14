@@ -1,22 +1,15 @@
 const mongoose = require("mongoose");
 
 const connectDB = async () => {
-
   try {
-
-    await mongoose.connect(
-      "mongodb+srv://admin:siddhu9822@imageupload.10sso5l.mongodb.net/designDB?retryWrites=true&w=majority"
-    );
+    await mongoose.connect(process.env.MONGO_URI);
 
     console.log("MongoDB Atlas Connected");
 
   } catch (error) {
-
-    console.error("MongoDB connection error:", error);
+    console.error("MongoDB connection error:", error.message);
     process.exit(1);
-
   }
-
 };
 
 module.exports = connectDB;

@@ -1,7 +1,8 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const ImageSchema = new mongoose.Schema({
-  url: String,   // 🔥 use url instead of filename/path
+  url: String,
+  public_id: String,
   category: String,
   createdAt: {
     type: Date,
@@ -9,4 +10,4 @@ const ImageSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('Image', ImageSchema)
+module.exports = mongoose.model('Image', ImageSchema);
