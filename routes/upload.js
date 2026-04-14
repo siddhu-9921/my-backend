@@ -26,28 +26,35 @@ const upload = multer({ storage });
 
 router.post('/', upload.array('images', 10), async (req, res) => {
   try {
+    console.log('Upload request body:', req.body);
+    console.log('Upload files:', req.files ? req.files.map(f => ({name: f.originalname, path: f.path, filename: f.filename})) : 'NO FILES');
+    
     const category = req.body.category;
 
     if (!category) {
+      console.log('Missing category');
       return res.status(400).json({ message: "Category required" });
     }
 
     if (!req.files || req.files.length === 0) {
+      console.log('No files received');
       return res.status(400).json({ message: "No files uploaded" });
     }
 
     const savedImages = [];
 
     for (const file of req.files) {
+      console.log(`Saving image: ${file.filename}`);
       const newImage = await Image.create({
-        url: file.path,                // ✅ Cloudinary URL
-        public_id: file.filename,      // ✅ REQUIRED for delete
+        url: file.path,
+        public_id: file.filename,
         category: category,
       });
 
       savedImages.push(newImage);
     }
 
+    console.log(`Upload success: ${savedImages.length} images saved`);
     res.status(200).json(savedImages);
 
   } catch (error) {

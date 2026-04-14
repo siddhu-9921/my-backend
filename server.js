@@ -52,30 +52,8 @@ app.use("/api/orders", orderRoutes);
 app.use("/api", authRoutes);
 
 /* ======================
-   IMAGE ROUTES
+   IMAGE ROUTES - REMOVED DUPLICATES (handled in upload.js)
 ====================== */
-app.get("/api/images/:category", async (req, res) => {
-  try {
-    const category = decodeURIComponent(req.params.category);
-
-    const images = await Image.find({
-      category: { $regex: new RegExp(`^${category}$`, "i") }
-    });
-
-    res.json(images);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.get("/api/images", async (req, res) => {
-  try {
-    const images = await Image.find();
-    res.json(images);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
 
 /* ======================
    ROOT CHECK
