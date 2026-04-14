@@ -35,7 +35,10 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "*",
+  origin: [
+    "http://localhost:8080",
+    "https://your-frontend.vercel.app"
+  ],
   credentials: true
 }));
 
