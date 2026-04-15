@@ -26,8 +26,8 @@ const upload = multer({ storage });
 router.post('/', upload.array('images', 10), async (req, res) => {
   try {
     console.log('Upload request body:', req.body);
-    console.log('Upload files:', req.files ? req.files.map(f => ({name: f.originalname, path: f.path, filename: f.filename})) : 'NO FILES');
-    
+    console.log('Upload files:', req.files ? req.files.map(f => ({ name: f.originalname, path: f.path, filename: f.filename })) : 'NO FILES');
+
     const category = req.body.category;
 
     if (!category) {
@@ -58,11 +58,8 @@ router.post('/', upload.array('images', 10), async (req, res) => {
     res.status(200).json(savedImages);
 
   } catch (error) {
-    console.error("UPLOAD ERROR:", error.message);
-    console.error(error.stack);
-    res.status(500).json({
-      error: error.message || "Server error"
-    });
+    console.error("UPLOAD ERROR FULL:", error); // ✅ full error
+    res.status(500).json({ error: error.message });
   }
 });
 
