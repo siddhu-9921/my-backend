@@ -52,10 +52,6 @@ app.use("/api/orders", orderRoutes);
 app.use("/api", authRoutes);
 
 /* ======================
-   IMAGE ROUTES - REMOVED DUPLICATES (handled in upload.js)
-====================== */
-
-/* ======================
    ROOT CHECK
 ====================== */
 app.get("/", (req, res) => {
@@ -67,6 +63,21 @@ app.get("/", (req, res) => {
 ====================== */
 const PORT = process.env.PORT || 5000;
 
+/* ======================
+   IMAGE ROUTES (ADD BOTH)
+====================== */
+
+// ✅ GET ALL IMAGES
+app.get("/api/images", async (req, res) => {
+  try {
+    const images = await Image.find().sort({ createdAt: -1 });
+    res.json(images);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ✅ GET BY CATEGORY
 app.get("/api/images/:category", async (req, res) => {
   try {
     const category = decodeURIComponent(req.params.category);
