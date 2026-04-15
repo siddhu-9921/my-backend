@@ -6,10 +6,11 @@ cloudinary.config({
   api_secret: process.env.CLOUD_SECRET,
 });
 
-console.log('Cloudinary config:', {
-  cloud_name: process.env.CLOUD_NAME ? 'SET' : 'MISSING',
-  api_key: process.env.CLOUD_KEY ? 'SET' : 'MISSING',
-  api_secret: process.env.CLOUD_SECRET ? 'SET' : 'SET'
+/* 🔍 DEBUG (IMPORTANT) */
+console.log("Cloudinary config:", {
+  cloud_name: process.env.CLOUD_NAME ? "SET" : "❌ MISSING",
+  api_key: process.env.CLOUD_KEY ? "SET" : "❌ MISSING",
+  api_secret: process.env.CLOUD_SECRET ? "SET" : "❌ MISSING",
 });
 
 module.exports = cloudinary;
