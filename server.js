@@ -37,7 +37,7 @@ app.use(express.json());
 app.use(cors({
   origin: [
     "http://localhost:8080",
-    "https://your-frontend.vercel.app"
+    "https://sangharsh-graphic-website.vercel.app"
   ],
   credentials: true
 }));
