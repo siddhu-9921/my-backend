@@ -43,9 +43,11 @@ router.post("/", upload.array("images", 10), async (req, res) => {
     res.status(200).json(savedImages);
 
   } catch (error) {
-    console.error("🔥 FULL ERROR:", error);
-    console.error("🔥 MESSAGE:", error.message);
-    console.error("🔥 STACK:", error.stack);
+    console.log("========== UPLOAD ERROR ==========");
+    console.log(error);                // full object
+    console.log("Message:", error.message);
+    console.log("Stack:", error.stack);
+    console.log("==================================");
 
     res.status(500).json({
       error: error.message || "Server error"
