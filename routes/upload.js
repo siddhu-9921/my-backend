@@ -9,10 +9,11 @@ const cloudinary = require("../config/cloudinary");
 /* STORAGE */
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: {
+  params: async (req, file) => ({
     folder: "portfolio_uploads",
     allowed_formats: ["jpg", "png", "jpeg", "webp"],
-  },
+    public_id: Date.now() + "-" + file.originalname, // ✅ SAFE
+  }),
 });
 
 const upload = multer({ storage });
@@ -33,8 +34,8 @@ router.post("/", upload.array("images", 10), async (req, res) => {
     const savedImages = await Promise.all(
       req.files.map(file =>
         Image.create({
-          url: file.path,   // ✅ Cloudinary URL
-          public_id: file.filename,
+          url: file.path,                 // ✅ Cloudinary URL
+          public_id: file.filename || file.public_id, // ✅ FIXED
           category
         })
       )
@@ -44,7 +45,7 @@ router.post("/", upload.array("images", 10), async (req, res) => {
 
   } catch (error) {
     console.log("========== UPLOAD ERROR ==========");
-    console.log(error);                // full object
+    console.log(error);
     console.log("Message:", error.message);
     console.log("Stack:", error.stack);
     console.log("==================================");
