@@ -14,7 +14,6 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "portfolio_uploads",
-    public_id: (req, file) => Date.now() + "-" + file.originalname
   },
 });
 
@@ -45,6 +44,7 @@ router.post('/', upload.array('images', 10), async (req, res) => {
 
     for (const file of req.files) {
       console.log(`Saving image: ${file.filename}`);
+
       const newImage = await Image.create({
         url: file.path,
         public_id: file.filename || file.public_id,
