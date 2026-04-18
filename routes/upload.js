@@ -38,7 +38,7 @@ router.post("/", upload.array("images", 10), async (req, res) => {
         return new Promise((resolve, reject) => {
           const stream = cloudinary.uploader.upload_stream(
             {
-              folder: "portfolio_uploads",
+              folder: "designs_uploads",
               public_id: Date.now() + "-" + file.originalname,
             },
             (error, result) => {
@@ -59,7 +59,10 @@ router.post("/", upload.array("images", 10), async (req, res) => {
     const savedImages = await Promise.all(
       uploadedImages.map(img =>
         Image.create({
-          url: img.secure_url,
+          url: img.secure_url.replace(
+            "/upload/",
+            "/upload/w_800,q_auto,f_auto/"
+          ),
           public_id: img.public_id,
           category: category,
         })
